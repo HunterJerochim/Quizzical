@@ -1,49 +1,69 @@
 import React from 'react'
 import { decode } from 'html-entities'
-import { nanoid } from "nanoid"
 import { Link } from 'react-router-dom'
 import AnswerButton from './AnswerButton'
 
-export default function Quiz() {
-
-    const [quiz, setQuiz] = React.useState([])
-    const [answers, setAnswers] = React.useState([])
+export default function Quiz({
+  quiz, 
+  setQuiz,
+  answers,
+  setAnswers
+                             }) {
 
     React.useEffect(() => {
       async function fetchQuiz() {
         const response = await fetch("https://opentdb.com/api.php?amount=10&category=11&difficulty=medium&type=multiple")
         const responseJSON = await response.json()
-        setQuiz(responseJSON.results)
+ 
+        const quiz = responseJSON.results.map((question, index) => {
+          // get all of the answers
+          const answers = [
+            ...question.incorrect_answers,
+            question.correct_answer,
+          ]
+          
+          // randomize the order of the answers
+          const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
+          
+          return {
+            ...question,
+            shuffledAnswers,
+            questionNumber: index // needed to store the answer data in state
+          }
+        })
+        setQuiz(quiz)
       }
       fetchQuiz();
     }, [])
 
-    function handleAnswerClick(answer) {
-      console.log(answer)
+    function handleAnswerClick(question, answer, index) {
+      // is this already my current selection
+      const isActive = answers[index] === answer
+      
+      setAnswers({
+        ...answers,
+        [index] : isActive ? '' : answer
+      })
     }
-
+    
     function renderAnswerOptions() {
       if (quiz.length > 0) {
         return (
           <div className='questions-container'>
-            {quiz.map((question) => {
-              const answers = [
-                ...question.incorrect_answers,
-                question.correct_answer,
-              ]
-              const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
+            {quiz.map(({ shuffledAnswers, ...question}, index) => {
               return (
-                <div key={nanoid()} className='question-container'>
+                <div key={`question-${index}-wrapper`} className='question-container'>
                   <h3 className='questionh3'>{decode(question.question)}</h3>
                   <div className='answers-container'>
-                    {shuffledAnswers.map((answer) => (
-                      <AnswerButton
-                        key={nanoid()}
-                        answer={answer}
-                        correctAnswer={question.correct_answer}
-                        onClick={handleAnswerClick}
-                      />
-                    ))}
+                    {shuffledAnswers.map((answer, shuffledIndex) => (
+                        <AnswerButton
+                          key={`question-${index}-button-${shuffledIndex}`}
+                          answer={answer}
+                          isActive={answers[index] === answer}
+                          correctAnswer={question.correct_answer}
+                          onClick={answer => handleAnswerClick(question.question, answer, index)}
+                        />
+                      ))}
                   </div>
                   <hr className='divider'></hr>
                 </div>
