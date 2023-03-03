@@ -45,6 +45,8 @@ export default function Quiz({
         [index] : isActive ? '' : answer
       })
     }
+
+    
     
     function renderAnswerOptions() {
       if (quiz.length > 0) {
@@ -86,8 +88,9 @@ export default function Quiz({
         if (quiz.length > 0) {
           console.log(quiz[0]?.question);
           console.log(quiz)
+          console.log(answers)
         }
-      }, [quiz]);
+      }, [quiz, answers]);
 
     return (
     <div>
@@ -98,7 +101,7 @@ export default function Quiz({
       <div>
           <div className="answers-container">{renderAnswerOptions()}</div>
           <div className='check-button-container'>
-            <Link to='/answers' >
+            <Link to={{ pathname: '/answers', state: { answers, quiz } }}>
               <button className='check-button'>Check Answers</button>
             </Link>
           </div>
