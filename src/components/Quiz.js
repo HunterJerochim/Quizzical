@@ -39,6 +39,8 @@ export default function Quiz({
     function handleAnswerClick(question, answer, index) {
       // is this already my current selection
       const isActive = answers[index] === answer
+
+      console.log({handleAnswers: answers})
       
       setAnswers({
         ...answers,
@@ -46,7 +48,9 @@ export default function Quiz({
       })
     }
 
-    
+    React.useEffect(() => {
+      setAnswers({})
+    }, [])
     
     function renderAnswerOptions() {
       if (quiz.length > 0) {
@@ -84,13 +88,13 @@ export default function Quiz({
         .then(data => setQuiz(data.results))
     }, []) */
 
-    React.useEffect(() => {
+    /* React.useEffect(() => {
         if (quiz.length > 0) {
           console.log(quiz[0]?.question);
           console.log(quiz)
           console.log(answers)
         }
-      }, [quiz, answers]);
+      }, [quiz, answers]); */
 
     return (
     <div>
@@ -101,7 +105,7 @@ export default function Quiz({
       <div>
           <div className="answers-container">{renderAnswerOptions()}</div>
           <div className='check-button-container'>
-            <Link to={{ pathname: '/answers', state: { answers, quiz } }}>
+            <Link to={{ pathname: '/answers' }}>
               <button className='check-button'>Check Answers</button>
             </Link>
           </div>
