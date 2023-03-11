@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { decode } from 'html-entities';
+import { Link } from 'react-router-dom'
 
 export default function Answers({ answers, quiz, setAnswers }) {
   const [numCorrectAnswers, setNumCorrectAnswers] = useState(0);
@@ -26,7 +27,7 @@ export default function Answers({ answers, quiz, setAnswers }) {
         return (
           <div className='question-container' key={`answer-${questionNumber}`}>
             <h3 className='question'>
-              <strong>{decode(question.question)}: </strong>
+              <strong>{decode(question.question)} </strong>
             </h3>
             <div className='answers-container'>
               {options.map((option, index) => (
@@ -51,7 +52,12 @@ export default function Answers({ answers, quiz, setAnswers }) {
           </div>
         );
       })}
-      <p className='num-correct-answers'>You scored {numCorrectAnswers}/10 correct answers</p>
+      <div className='score-container'>
+          <p className='num-correct-answers'><strong>You scored {numCorrectAnswers}/10 correct answers</strong></p>
+        <Link to={{ pathname: '/' }}>
+          <button className='play-again-button'>Play again</button>
+        </Link>
+      </div>
     </div>
   );
 }
